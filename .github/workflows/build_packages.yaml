@@ -13,7 +13,7 @@ on:
 
 jobs:
   build_packages:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
 
     strategy:
       fail-fast: false
@@ -21,17 +21,11 @@ jobs:
         arch:
         - [amd64, gcc, g++, x86_64-linux-gnu, /usr/local]
         - [arm64, aarch64-linux-gnu-gcc, aarch64-linux-gnu-g++, aarch64-linux-gnu, /usr/aarch64-linux-gnu]
-        - [mips, mips-linux-gnu-gcc, mips-linux-gnu-g++, mips-linux-gnu, /usr/mips-linux-gnu]
-        - [riscv64, riscv64-linux-gnu-gcc, riscv64-linux-gnu-g++, riscv64-linux-gnu, /usr/riscv64-linux-gnu]
-        - [armhf, arm-linux-gnueabihf-gcc, arm-linux-gnueabihf-g++, arm-linux-gnueabihf, /usr/arm-linux-gnueabihf]
-        - [armel, arm-linux-gnueabi-gcc, arm-linux-gnueabi-g++, arm-linux-gnueabi, /usr/arm-linux-gnueabi]
         package_type:
-        - rpm
         - deb
         build_type:
         - ""
         - "-sqlite"
-        - "-msquic"
         - "-full"
         exclude:
         - arch: [mips, mips-linux-gnu-gcc, mips-linux-gnu-g++]
@@ -53,10 +47,6 @@ jobs:
         sudo apt update
         sudo chmod 755 /usr/local/bin
         sudo apt install -y g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
-        sudo apt install -y g++-mips-linux-gnu gcc-mips-linux-gnu
-        sudo apt install -y g++-riscv64-linux-gnu gcc-riscv64-linux-gnu
-        sudo apt install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-        sudo apt install -y gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
         sudo apt install -y cmake ninja-build rpm checkinstall
         sudo sed -i 's/Version: ${VERSION}-${RELEASE}/Version: ${VERSION}/g' $(which checkinstall)
         sudo sed -i 's/-${RELEASE}_${ARCHITECTURE}/_${ARCHITECTURE}/g' $(which checkinstall)
@@ -219,7 +209,7 @@ jobs:
         aws s3 cp --recursive build/_packages s3://packages.emqx/nanomq/$(git describe --abbrev=0 --tags)
 
   build_docker_prepare:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
     outputs:
       host: ${{ steps.host.outputs.host }}
     steps:
@@ -296,7 +286,7 @@ jobs:
         context: .
 
   build_archive:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -320,7 +310,7 @@ jobs:
 
   publish_packages:
     needs: [build_packages, build_docker]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-18.04
     if: github.event_name == 'release'
 
     steps:

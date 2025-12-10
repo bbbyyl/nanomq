@@ -24,8 +24,6 @@ jobs:
         package_type:
         - deb
         build_type:
-        - ""
-        - "-sqlite"
         - "-full"
         exclude:
         - arch: [mips, mips-linux-gnu-gcc, mips-linux-gnu-g++]
